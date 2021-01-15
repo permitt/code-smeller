@@ -1,0 +1,3 @@
+    public boolean needsConnectionLeftOpen() {
+        return false;
+    }

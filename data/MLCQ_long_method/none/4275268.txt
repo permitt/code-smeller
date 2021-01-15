@@ -1,0 +1,3 @@
+        double getRemB() {
+            return finalRemB;
+        }

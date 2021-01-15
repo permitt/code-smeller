@@ -1,0 +1,1 @@
+        public static void setSize(int sz) { cache.setSize(sz); }

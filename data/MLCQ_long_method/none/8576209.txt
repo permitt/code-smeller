@@ -1,0 +1,2 @@
+    public getNamespaceDescriptor_args() {
+    }

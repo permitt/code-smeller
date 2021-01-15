@@ -1,0 +1,3 @@
+  private SparkSkewJoinProcFactory() {
+    // prevent instantiation
+  }

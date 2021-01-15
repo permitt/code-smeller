@@ -1,0 +1,4 @@
+    private LdapConnectionProvider()
+    {
+        init();
+    }

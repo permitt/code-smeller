@@ -1,0 +1,2 @@
+		public TimerAnyTimeoutType_template() {
+		}
