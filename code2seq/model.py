@@ -205,7 +205,7 @@ class Model(tf.Module):
         contexts_sum = tf.reduce_sum(batched_contexts * tf.expand_dims(valid_mask, -1),
                                      axis=1)  # (batch_size, dim * 2 + rnn_size)
         contexts_average = tf.divide(contexts_sum, tf.cast(tf.expand_dims(num_contexts_per_example, -1), tf.float32))
-
+        print(contexts_average)
         fake_encoder_state = tuple([contexts_average, contexts_average] for _ in
                                    range(self.config.NUM_DECODER_LAYERS))
 
