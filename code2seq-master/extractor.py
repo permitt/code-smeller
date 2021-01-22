@@ -18,6 +18,7 @@ class Extractor:
         return requests.post(url, data=json.dumps({"code": code_string, "decompose": True}, separators=(',', ':')))
 
     def extract_paths(self, code_string):
+
         response = self.post_request(self.extractor_api_url, code_string)
         response_array = json.loads(response.text)
         if 'errorType' in response_array:

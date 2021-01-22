@@ -58,6 +58,8 @@ class Config:
         self.NUM_DECODER_LAYERS = 0
         self.SAVE_PATH = args.save_path_prefix
         self.LOAD_PATH = args.load_path
+        self.INPUT_FILE = args.input_file
+        self.FILE_INDEX = args.file_index
         self.MAX_PATH_LENGTH = 0
         self.MAX_NAME_PARTS = 0
         self.MAX_TARGET_PARTS = 0

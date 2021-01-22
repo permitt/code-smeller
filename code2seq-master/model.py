@@ -28,6 +28,8 @@ class Model:
         self.predict_top_indices_op, self.predict_top_scores_op, self.predict_target_strings_op = None, None, None
         self.subtoken_to_index = None
 
+        self.SAVE_CONTEXT_VECTOR = None
+
         if config.LOAD_PATH:
             self.load_model(sess=None)
         else:
@@ -143,6 +145,7 @@ class Model:
                                                                                   multi_batch_elapsed if multi_batch_elapsed > 0 else 1)))
 
     def evaluate(self, release=False):
+        print(" POZIVA ME EVAULAUIRAM LOL")
         eval_start_time = time.time()
         if self.eval_queue is None:
             self.eval_queue = reader.Reader(subtoken_to_index=self.subtoken_to_index,
@@ -411,8 +414,12 @@ class Model:
         ])
         contexts_sum = tf.reduce_sum(batched_contexts * tf.expand_dims(valid_mask, -1),
                                      axis=1)  # (batch_size, dim * 2 + rnn_size)
+
+
         contexts_average = tf.divide(contexts_sum, tf.to_float(tf.expand_dims(num_contexts_per_example, -1)))
-        print(contexts_average)
+        self.SAVE_CONTEXT_VECTOR = contexts_average
+
+
         fake_encoder_state = tuple(tf.nn.rnn_cell.LSTMStateTuple(contexts_average, contexts_average) for _ in
                                    range(self.config.NUM_DECODER_LAYERS))
         projection_layer = tf.layers.Dense(self.target_vocab_size, use_bias=False)
@@ -542,7 +549,7 @@ class Model:
 
         batched_embed = tf.layers.dense(inputs=context_embed, units=self.config.DECODER_SIZE,
                                         activation=tf.nn.tanh, trainable=not is_evaluating, use_bias=False)
-
+        print(" OPAAA COMP CONTEXTS  ", batched_embed)
         return batched_embed
 
     def build_test_graph(self, input_tensors):
@@ -555,7 +562,7 @@ class Model:
         path_lengths = input_tensors[reader.PATH_LENGTHS_KEY]
         path_target_lengths = input_tensors[reader.PATH_TARGET_LENGTHS_KEY]
 
-        with tf.variable_scope('model', reuse=self.get_should_reuse_variables()):
+        with tf.variable_scope('model', reuse=self.config.FILE_INDEX > 0):
             subtoken_vocab = tf.get_variable('SUBTOKENS_VOCAB',
                                              shape=(self.subtoken_vocab_size, self.config.EMBEDDINGS_SIZE),
                                              dtype=tf.float32, trainable=False)
@@ -573,7 +580,7 @@ class Model:
                                                      path_source_lengths=path_source_lengths,
                                                      path_lengths=path_lengths, path_target_lengths=path_target_lengths,
                                                      is_evaluating=True)
-
+            print("RACUNAM CONTEXTSSEE ", batched_contexts)
             outputs, final_states = self.decode_outputs(target_words_vocab=target_words_vocab,
                                                         target_input=target_index, batch_size=tf.shape(target_index)[0],
                                                         batched_contexts=batched_contexts, valid_mask=valid_mask,
@@ -605,18 +612,22 @@ class Model:
             self.predict_path_string = reader_output[reader.PATH_STRINGS_KEY]
             self.predict_path_target_string = reader_output[reader.PATH_TARGET_STRINGS_KEY]
             self.predict_target_strings_op = reader_output[reader.TARGET_STRING_KEY]
-
             self.initialize_session_variables(self.sess)
             self.saver = tf.train.Saver()
             self.load_model(self.sess)
 
         results = []
+        extracted_vec = []
         for line in predict_data_lines:
+            print("LINE ", line)
+
             predicted_indices, top_scores, true_target_strings, attention_weights, path_source_string, path_strings, path_target_string = self.sess.run(
                 [self.predict_top_indices_op, self.predict_top_scores_op, self.predict_target_strings_op,
                  self.attention_weights_op,
                  self.predict_source_string, self.predict_path_string, self.predict_path_target_string],
                 feed_dict={self.predict_placeholder: line})
+
+
 
             top_scores = np.squeeze(top_scores, axis=0)
             path_source_string = path_source_string.reshape((-1))
@@ -624,7 +635,11 @@ class Model:
             path_target_string = path_target_string.reshape((-1))
             predicted_indices = np.squeeze(predicted_indices, axis=0)
             true_target_strings = Common.binary_to_string(true_target_strings[0])
+            print("PATH_SOURCE_STRINGS ", path_source_string)
+            print("PATH TARGET STRING " , path_target_string)
+            print("TRUE TARGET STRINGS", true_target_strings)
 
+            print("TOP SCORES ", top_scores)
             if self.config.BEAM_WIDTH > 0:
                 predicted_strings = [[self.index_to_target[sugg] for sugg in timestep]
                                      for timestep in predicted_indices]  # (target_length, top-k)  
@@ -640,7 +655,11 @@ class Model:
                                                                  attention_weights)
 
             results.append((true_target_strings, predicted_strings, top_scores, attention_per_path))
-        return results
+
+            extracted_vec = self.sess.run(self.SAVE_CONTEXT_VECTOR, feed_dict={self.predict_placeholder: line})
+            print("SACUVAO SAM OVAJ VEKTOR ", extracted_vec, '\n\n\n\n\n\n\n\n\n')
+
+        return results, extracted_vec
 
     @staticmethod
     def get_attention_per_path(source_strings, path_strings, target_strings, attention_weights):

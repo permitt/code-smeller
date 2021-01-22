@@ -22,20 +22,18 @@ class InteractivePredictor:
             return file.readlines()
 
     def predict(self):
-        input_filename = 'Input.java'
+        input_filename = self.config.INPUT_FILE
         print('Serving')
         while True:
-            print('Modify the file: "' + input_filename + '" and press any key when ready, or "q" / "exit" to exit')
-            user_input = input()
-            if user_input.lower() in self.exit_keywords:
-                print('Exiting...')
-                return
+            print('Reading the input file...')
+
             user_input = ' '.join(self.read_file(input_filename))
             try:
                 predict_lines, pc_info_dict = self.path_extractor.extract_paths(user_input)
             except ValueError:
                 continue
-            model_results = self.model.predict(predict_lines)
+            model_results, extracted_vector = self.model.predict(predict_lines)
+            #print("DOBIJAM RESULTS OVE ", model_results)
 
             prediction_results = Common.parse_results(model_results, pc_info_dict, topk=SHOW_TOP_CONTEXTS)
             for index, method_prediction in prediction_results.items():
@@ -53,3 +51,7 @@ class InteractivePredictor:
                     print('Predicted:')
                     for predicted_seq in method_prediction.predictions:
                         print('\t%s' % predicted_seq.prediction)
+
+            return extracted_vector
+        # RETURN VEC
+
