@@ -145,7 +145,6 @@ class Model:
                                                                                   multi_batch_elapsed if multi_batch_elapsed > 0 else 1)))
 
     def evaluate(self, release=False):
-        print(" POZIVA ME EVAULAUIRAM LOL")
         eval_start_time = time.time()
         if self.eval_queue is None:
             self.eval_queue = reader.Reader(subtoken_to_index=self.subtoken_to_index,
@@ -549,7 +548,6 @@ class Model:
 
         batched_embed = tf.layers.dense(inputs=context_embed, units=self.config.DECODER_SIZE,
                                         activation=tf.nn.tanh, trainable=not is_evaluating, use_bias=False)
-        print(" OPAAA COMP CONTEXTS  ", batched_embed)
         return batched_embed
 
     def build_test_graph(self, input_tensors):

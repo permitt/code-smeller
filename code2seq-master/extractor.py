@@ -18,13 +18,24 @@ class Extractor:
         return requests.post(url, data=json.dumps({"code": code_string, "decompose": True}, separators=(',', ':')))
 
     def extract_paths(self, code_string):
+        error = True
 
-        response = self.post_request(self.extractor_api_url, code_string)
-        response_array = json.loads(response.text)
-        if 'errorType' in response_array:
-            raise ValueError(response.text)
-        if 'errorMessage' in response_array:
-            raise TimeoutError(response.text)
+        while error:
+            try:
+                response = self.post_request(self.extractor_api_url, code_string)
+                response_array = json.loads(response.text)
+                if 'errorMessage' in response_array:
+                    raise TimeoutError(response.text)
+                error = False
+                print(response_array, ' je ODGOVOR OD SERVERA \n\n\n\n\n')
+            except TimeoutError:
+                print("OPET JEBENI TIMEOUT")
+                error = True
+
+        # if 'errorType' in response_array:
+        #     raise ValueError(response.text)
+
+
         pc_info_dict = {}
         result = []
         for single_method in response_array:
@@ -38,4 +49,5 @@ class Extractor:
             space_padding = ' ' * (self.config.DATA_NUM_CONTEXTS - len(contexts))
             result_line = ' '.join(current_result_line_parts) + space_padding
             result.append(result_line)
+        print("RESULT KOJI SALJEM", result, '\n\n\n\n\n\n', pc_info_dict, '\n\n\n\n\n\n')
         return result, pc_info_dict

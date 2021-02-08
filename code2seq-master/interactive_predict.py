@@ -1,8 +1,14 @@
 from common import Common
 from extractor import Extractor
 
+
+import sys
+sys.path.append('./JavaExtractor/')
+
+from extract import run
+
 SHOW_TOP_CONTEXTS = 10
-MAX_PATH_LENGTH = 8
+MAX_PATH_LENGTH = 80
 MAX_PATH_WIDTH = 2
 EXTRACTION_API = 'https://po3g2dx2qa.execute-api.us-east-1.amazonaws.com/production/extractmethods'
 
@@ -21,19 +27,27 @@ class InteractivePredictor:
         with open(input_filename, 'r') as file:
             return file.readlines()
 
-    def predict(self):
+    def predict(self, input_file_path):
         input_filename = self.config.INPUT_FILE
         print('Serving')
         while True:
             print('Reading the input file...')
 
             user_input = ' '.join(self.read_file(input_filename))
-            try:
-                predict_lines, pc_info_dict = self.path_extractor.extract_paths(user_input)
-            except ValueError:
-                continue
+
+            # OVO TREBA DA ZAMIJENIS SA JAVA EXTRACT pozivom koji ti valjda sam vraca ovaj predict_lines
+            # try:
+            #     predict_lines, pc_info_dict = self.path_extractor.extract_paths(user_input)
+            # except ValueError:
+            #     continue
+            predict_lines, pc_info_dict = [None, None]
+
+            precicted_lines2 = run(input_file_path)
+
+            print("STIGAO POSLE NJEGA\n\n\n\n\n\n\n\n\n" + precicted_lines2.decode('UTF-8'))
+
+
             model_results, extracted_vector = self.model.predict(predict_lines)
-            #print("DOBIJAM RESULTS OVE ", model_results)
 
             prediction_results = Common.parse_results(model_results, pc_info_dict, topk=SHOW_TOP_CONTEXTS)
             for index, method_prediction in prediction_results.items():

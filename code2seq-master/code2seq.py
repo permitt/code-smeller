@@ -28,7 +28,7 @@ def extract_vector(model_path, input_file, file_index):
 
     model = Model(config)
     predictor = InteractivePredictor(config, model)
-    extracted_vector = predictor.predict()
+    extracted_vector = predictor.predict(input_file)
 
     save_vector = CodeModel(name, label, extracted_vector)
     save_vector.save()
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     DATA_PATH = '../data/MLCQ_long_method/'
     MODEL_PATH = '../models/java-large-model/model_iter52.release'
 
-    none = {'label':'none', 'data': []}
+    none = {'label': 'major', 'data': []}
     for index, file in enumerate(os.listdir(path= DATA_PATH + none['label'])):
         print(index)
         extract_vector(MODEL_PATH, DATA_PATH + none['label'] + '/' + file, index) if file[-3:] == 'txt' else None

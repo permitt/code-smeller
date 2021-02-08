@@ -73,6 +73,25 @@ def ExtractFeaturesForDirsList(args, dirs):
     finally:
         shutil.rmtree(TMP_DIR, ignore_errors=True)
 
+# Runs JavaExtractor which prints the AST parsed code string and then catches the output
+def run(file_name):
+
+    command = ['java', '-cp', 'JavaExtractor/JPredict/target/JavaExtractor.jar', 'JavaExtractor.App',
+               '--max_path_length', str(8), '--max_path_width', str(2),
+               '--file', file_name]
+
+    p = subprocess.Popen(command,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT,
+                         )
+
+    ret = p.stdout.readline()
+    p.kill()
+    return ret
+
+    for line in p.stdout:
+        return line
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -88,6 +107,9 @@ if __name__ == '__main__':
         command = 'java -cp ' + args.jar + ' JavaExtractor.App --max_path_length ' + \
                   str(args.max_path_length) + ' --max_path_width ' + str(args.max_path_width) + ' --file ' + args.file
         os.system(command)
+
+
+
     elif args.dir is not None:
         subdirs = get_immediate_subdirectories(args.dir)
         if len(subdirs) == 0:

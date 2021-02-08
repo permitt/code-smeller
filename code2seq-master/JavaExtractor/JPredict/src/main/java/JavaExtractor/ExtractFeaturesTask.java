@@ -29,7 +29,7 @@ class ExtractFeaturesTask implements Callable<Void> {
         return null;
     }
 
-    public void processFile() {
+    public String processFile() {
         ArrayList<ProgramFeatures> features;
         try {
             features = extractSingleFile();
@@ -43,7 +43,9 @@ class ExtractFeaturesTask implements Callable<Void> {
 
         String toPrint = featuresToString(features);
         if (toPrint.length() > 0) {
-            System.out.println(toPrint);
+            System.out.println(" VIDJI STA STAMPAM" + toPrint);
+            // Sad cuvaj u fajl ? e jbg.. upisi ga u AST_parsed_input.txt
+            return toPrint;
         }
     }
 
@@ -91,6 +93,7 @@ class ExtractFeaturesTask implements Callable<Void> {
             methodsOutputs.add(builder.toString());
 
         }
+
         return StringUtils.join(methodsOutputs, "\n");
     }
 }
