@@ -43,8 +43,6 @@ class ExtractFeaturesTask implements Callable<Void> {
 
         String toPrint = featuresToString(features);
         if (toPrint.length() > 0) {
-            System.out.println(" VIDJI STA STAMPAM" + toPrint);
-            // Sad cuvaj u fajl ? e jbg.. upisi ga u AST_parsed_input.txt
             return toPrint;
         }
     }

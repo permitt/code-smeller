@@ -84,13 +84,10 @@ def run(file_name):
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT,
                          )
-
     ret = p.stdout.readline()
     p.kill()
-    return ret
+    return ret.decode('UTF-8')
 
-    for line in p.stdout:
-        return line
 
 
 if __name__ == '__main__':

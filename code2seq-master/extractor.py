@@ -49,5 +49,5 @@ class Extractor:
             space_padding = ' ' * (self.config.DATA_NUM_CONTEXTS - len(contexts))
             result_line = ' '.join(current_result_line_parts) + space_padding
             result.append(result_line)
-        print("RESULT KOJI SALJEM", result, '\n\n\n\n\n\n', pc_info_dict, '\n\n\n\n\n\n')
+        print('\n\n\n\n\n\n' + "RESULT KOJI SALJEM", result)
         return result, pc_info_dict

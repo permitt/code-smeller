@@ -43,6 +43,7 @@ class Model:
 
             if self.config.DATA_NUM_CONTEXTS <= 0:
                 self.config.DATA_NUM_CONTEXTS = max_contexts
+
             self.subtoken_to_index, self.index_to_subtoken, self.subtoken_vocab_size = \
                 Common.load_vocab_from_dict(subtoken_to_count, add_values=[Common.PAD, Common.UNK],
                                             max_size=config.SUBTOKENS_VOCAB_MAX_SIZE)
@@ -617,8 +618,6 @@ class Model:
         results = []
         extracted_vec = []
         for line in predict_data_lines:
-            print("LINE ", line)
-
             predicted_indices, top_scores, true_target_strings, attention_weights, path_source_string, path_strings, path_target_string = self.sess.run(
                 [self.predict_top_indices_op, self.predict_top_scores_op, self.predict_target_strings_op,
                  self.attention_weights_op,
@@ -699,6 +698,7 @@ class Model:
         print('Saved after %d epochs in: %s' % (self.epochs_trained, save_target))
 
     def load_model(self, sess):
+
         if not sess is None:
             self.saver.restore(sess, self.config.LOAD_PATH)
             print('Done loading model')

@@ -33,38 +33,46 @@ class InteractivePredictor:
         while True:
             print('Reading the input file...')
 
-            user_input = ' '.join(self.read_file(input_filename))
+            #user_input = ' '.join(self.read_file(input_filename))
 
-            # OVO TREBA DA ZAMIJENIS SA JAVA EXTRACT pozivom koji ti valjda sam vraca ovaj predict_lines
             # try:
             #     predict_lines, pc_info_dict = self.path_extractor.extract_paths(user_input)
             # except ValueError:
             #     continue
+
+
             predict_lines, pc_info_dict = [None, None]
 
-            precicted_lines2 = run(input_file_path)
+            predicted_lines = run(input_file_path)
+            print(input_file_path + "OVO JE KOD \n\n\n\n")
 
-            print("STIGAO POSLE NJEGA\n\n\n\n\n\n\n\n\n" + precicted_lines2.decode('UTF-8'))
+
+            num_contexts = len(predicted_lines.split(' '))
+            if(num_contexts <= self.config.DATA_NUM_CONTEXTS):
+                predicted_lines = [predicted_lines.strip() + (' ' * (self.config.DATA_NUM_CONTEXTS - num_contexts + 1))]
+            else:
+                predicted_lines = [' '.join(predicted_lines.split(' ')[:self.config.DATA_NUM_CONTEXTS + 1])]
+
+            model_results, extracted_vector = self.model.predict(predicted_lines)
+            print(" JEBENI VEKTOR SAM DOBIO " + str(extracted_vector) + " \n\n\n\n\n\n\n\n\n\n\n")
 
 
-            model_results, extracted_vector = self.model.predict(predict_lines)
-
-            prediction_results = Common.parse_results(model_results, pc_info_dict, topk=SHOW_TOP_CONTEXTS)
-            for index, method_prediction in prediction_results.items():
-                print('Original name:\t' + method_prediction.original_name)
-                if self.config.BEAM_WIDTH == 0:
-                    print('Predicted:\t%s' % [step.prediction for step in method_prediction.predictions])
-                    for timestep, single_timestep_prediction in enumerate(method_prediction.predictions):
-                        print('Attention:')
-                        print('TIMESTEP: %d\t: %s' % (timestep, single_timestep_prediction.prediction))
-                        for attention_obj in single_timestep_prediction.attention_paths:
-                            print('%f\tcontext: %s,%s,%s' % (
-                                attention_obj['score'], attention_obj['token1'], attention_obj['path'],
-                                attention_obj['token2']))
-                else:
-                    print('Predicted:')
-                    for predicted_seq in method_prediction.predictions:
-                        print('\t%s' % predicted_seq.prediction)
+            #prediction_results = Common.parse_results(model_results, pc_info_dict, topk=SHOW_TOP_CONTEXTS)
+            # for index, method_prediction in prediction_results.items():
+            #     print('Original name:\t' + method_prediction.original_name)
+            #     if self.config.BEAM_WIDTH == 0:
+            #         print('Predicted:\t%s' % [step.prediction for step in method_prediction.predictions])
+            #         for timestep, single_timestep_prediction in enumerate(method_prediction.predictions):
+            #             print('Attention:')
+            #             print('TIMESTEP: %d\t: %s' % (timestep, single_timestep_prediction.prediction))
+            #             for attention_obj in single_timestep_prediction.attention_paths:
+            #                 print('%f\tcontext: %s,%s,%s' % (
+            #                     attention_obj['score'], attention_obj['token1'], attention_obj['path'],
+            #                     attention_obj['token2']))
+            #     else:
+            #         print('Predicted:')
+            #         for predicted_seq in method_prediction.predictions:
+            #             print('\t%s' % predicted_seq.prediction)
 
             return extracted_vector
         # RETURN VEC
