@@ -579,7 +579,6 @@ class Model:
                                                      path_source_lengths=path_source_lengths,
                                                      path_lengths=path_lengths, path_target_lengths=path_target_lengths,
                                                      is_evaluating=True)
-            print("RACUNAM CONTEXTSSEE ", batched_contexts)
             outputs, final_states = self.decode_outputs(target_words_vocab=target_words_vocab,
                                                         target_input=target_index, batch_size=tf.shape(target_index)[0],
                                                         batched_contexts=batched_contexts, valid_mask=valid_mask,
@@ -654,7 +653,6 @@ class Model:
             results.append((true_target_strings, predicted_strings, top_scores, attention_per_path))
 
             extracted_vec = self.sess.run(self.SAVE_CONTEXT_VECTOR, feed_dict={self.predict_placeholder: line})
-            print("SACUVAO SAM OVAJ VEKTOR ", extracted_vec, '\n\n\n\n\n\n\n\n\n')
 
         return results, extracted_vec
 

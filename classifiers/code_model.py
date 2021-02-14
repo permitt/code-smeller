@@ -2,14 +2,15 @@ import pickle
 
 
 class CodeModel:
-    PATH = '../data/INPUT/'
+    PATH_DATA = '../data/'
 
-    def __init__(self, name, label, vector):
+    def __init__(self, name, label, vector, folderName):
         self.vector = vector
         self.name = name
         self.label = label
+        self.PATH = self.PATH_DATA + "/" + folderName
 
-    """"
+    """
         Saved file example path: data/INPUT/major/38568.pickle
     """
     def save(self):
