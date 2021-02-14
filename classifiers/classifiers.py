@@ -67,10 +67,6 @@ def param_search_rf(over_sampling_method: str, smell_type: str) -> None:
     print(rf_random.best_params_)
 
 
-    rf_clf = RandomForestClassifier(n_estimators=100)
-    rf_clf.fit(X_train, Y_train)
-    Y_pred = rf_clf.predict(X_test)
-    print("RESULT ZA RANDOM FOREST : \n", classification_report(Y_test, Y_pred))
 
 if __name__ == '__main__':
     classify('SMOTE', 'LONG_METHOD')
