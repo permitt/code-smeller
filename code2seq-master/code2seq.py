@@ -60,6 +60,9 @@ def parse_god_class():
     label = 'none'
     for index, file in enumerate(os.listdir(path=DATA_PATH_GC + label)):
         print(index)
+        if index < 1608:
+            continue
+
         temp_file = DATA_PATH_GC + "temp.txt"  # path to file where each method will be written
         input_file = DATA_PATH_GC + label + '/' + file
         name = input_file.split('/')[-1][:-4]  # remove .txt extension

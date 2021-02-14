@@ -21,21 +21,24 @@ def load_data(smell_type: str) -> ([], []):
         ds_distribution = pd.read_csv(GOD_CLASS_SPLITTED_CSV)
         ds_prefix = DATASET_GC_PREFIX_PATH
 
-    ds_distribution['parts']
     X, Y = {'train': [], 'test': []}, {'train': [], 'test': []}
 
+    cls = {'major':0, 'minor':0, 'critical':0, 'none': 0}
     for index, file in enumerate(ds_distribution['files']):
         try:
             pickling_open = open(ds_prefix + file[:-3] + "pickle", "rb")
             obj = pickle.load(pickling_open)
+
             if not np.isnan(obj.vector[0][0]):
                 X[ds_distribution['parts'][index]].append(obj.vector[0])
                 label = 'none' if obj.label == 'none' else 'code_smell'
                 Y[ds_distribution['parts'][index]].append(label)
 
         except Exception as error:
-            print("Ne postoji fajl :( ", error)
+            cls[obj.label] += 1
 
+
+    print(cls)
     return np.array(X['train']), np.array(Y['train']), np.array(X['test']), np.array(Y['test'])
 
 
