@@ -3,7 +3,7 @@
 
 Project for detecting smell in code using 320-dimensional feature vectors extracted from the code2seq model. Extracted vectors are forwarded as input to ML classification algorithms: 
 * SVM 
-* Random Forests 
+* Random Forest
 * Logistic Regression <br/> <br/>
 The output of a classifier is an integer:
  * 1 for code smell 
